@@ -1,0 +1,55 @@
+private_lane :create_android_build do
+    sh "npx react-native build-android --mode=release"
+end
+
+private_lane :create_ios_build do
+    get_certificates(
+        username: 'krXXXXXXXX@gmail.com',                           # Email address associated with your Apple ID
+        keychain_password: 'XXXXXXXXXXXXX'                          # Your Apple ID password to access certificates from your Keychain
+    )
+    get_provisioning_profile(
+        username: 'krXXXXXXX1@gmail.com',                           # Email address associated with your Apple ID
+        app_identifier: 'org.reactjs.native.example.RunwayExample'  # The app identifier for your ios project
+    )
+    build_app(                    
+        workspace: "ios/RunwayExample.xcworkspace",                 # The relative path to your XCode workspace
+        clean: true,                                                # To clear previous build files before starting a new build
+        output_directory: "fastlane/"                               # Where to place the IPA file when built
+    )
+end
+
+lane :create_build do
+    create_android_build
+    create_ios_build
+end
+
+platform :android do
+    lane :push_to_play_store do
+        create_android_build
+
+        upload_to_play_store(
+            track: 'internal',
+            release_status: 'draft',
+            skip_upload_metadata: true,
+            skip_upload_images: true,
+            skip_upload_screenshots: true,
+            skip_upload_changelogs: true,
+            aab: 'android/app/build/outputs/bundle/release/app-release.aab'
+        )
+    end
+end
+
+platform :ios do
+    lane :push_to_app_store do
+        create_ios_build
+        api_key = app_store_connect_api_key(
+            key_id: "R4XXXXXXC5",
+            issuer_id: "1XXXXXa-2XX1-44XXX-bXXXd-f34XXXXXce1e",
+            key_filepath: "fastlane/key_store.p8",
+        )
+        upload_to_testflight(
+            ipa: "build/ios/ipa/fastlane_example.ipa",
+            api_key: api_key
+        )
+    end
+end

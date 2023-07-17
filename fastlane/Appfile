@@ -1,0 +1,11 @@
+json_key_file("fastlane/play-store-key.json")           # Make sure to provide the correct relative path to the credentials json file you just moved to the fastlane folder. The path should be relative to the project's root directory
+package_name("com.runwayexample")                                 # Provide the package name of your android app. You can find it in the `app/build.gradle` file
+
+
+for_platform :ios do
+    app_identifier("org.reactjs.native.example.RunwayExample")            # The bundle identifier of your app
+    apple_id("krharsh171@gmail.com")                                       # Your Apple Developer Portal username
+
+    itc_team_id("126507044")                                                 # App Store Connect Team ID
+    team_id("C6SS755P33")                                                   # Developer Portal Team ID
+end
